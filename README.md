@@ -87,3 +87,16 @@ scripts/            reproducible generator for the policy PDFs
 ## Simplified in this prototype
 
 The ERP is a JSON-backed mock with real pricing rules (in production: SAP or Dynamics behind the same tool interface). Memory, carts and the sales queue are in-memory on a single instance. There's no authentication; the account switcher stands in for SSO, while account scoping is enforced server-side. All company data is fictional.
+
+## UI Screens
+
+<img width="1262" height="692" alt="image" src="https://github.com/user-attachments/assets/f0576275-d79c-4d08-a433-67fe43adafed" />
+
+<img width="1260" height="695" alt="image" src="https://github.com/user-attachments/assets/95069fd1-0b34-45f6-b209-fa2bafb79764" />
+
+<img width="1260" height="698" alt="image" src="https://github.com/user-attachments/assets/ba89b535-b75e-4cdc-9656-531ae020eaf1" />
+
+<img width="1256" height="693" alt="image" src="https://github.com/user-attachments/assets/44668b54-9dab-4b52-a87e-ecd4ef01fcf9" />
+
+
+
