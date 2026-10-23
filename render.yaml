@@ -1,0 +1,18 @@
+# Render Blueprint: New > Blueprint > select this repo.
+services:
+  - type: web
+    name: kestrel-commerce-agent
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # The three local models need ~0.5 GB RAM; 512 MB plans (Free/Starter) risk out-of-memory restarts.
+    plan: standard
+    region: singapore
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false  # set in the Render dashboard; never committed
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "8"
+      - key: RATE_LIMIT_PER_DAY
+        value: "300"

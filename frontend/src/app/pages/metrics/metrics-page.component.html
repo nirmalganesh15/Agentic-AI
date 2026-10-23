@@ -1,0 +1,240 @@
+<div class="container">
+  <header class="page-head">
+    <span class="eyebrow">Eval-driven development</span>
+    <h1>Evals & experiments</h1>
+    <p>
+      Every change to the agent is measured by the eval harness (<code>uv run python -m rag.evals.run</code>):
+      49 agent cases graded by an LLM judge <em>and</em> deterministic checks, retrieval measured per search stage,
+      and ablation runs that switch one safeguard off at a time. Quality gates fail the build on regression.
+    </p>
+  </header>
+
+  @switch (state().status) {
+    @case ('loading') { <div class="card state">Loading the latest eval report…</div> }
+    @case ('error') { <div class="card state">@if (state(); as s) { @if (s.status === 'error') { {{ s.message }} } }</div> }
+  }
+
+  @if (report(); as r) {
+    <section class="run-bar card">
+      @if (r.passed) { <span class="badge good">✓ All {{ r.gates.length }} quality gates passed</span> }
+      @else { <span class="badge critical">✕ Quality gates failed</span> }
+      <dl class="run-meta">
+        <div><dt>Run</dt><dd>{{ r.created_at | date: 'medium' }}</dd></div>
+        <div><dt>Commit</dt><dd class="mono">{{ r.git_commit }}</dd></div>
+        <div><dt>Cases</dt><dd>{{ r.dataset.cases }}</dd></div>
+        @if (r.agent) { <div><dt>Judge</dt><dd>{{ r.agent.judge_model }}</dd></div> }
+        <div><dt>Agent</dt><dd>{{ r.config['agent_model'] }} → {{ r.config['fallback_model'] }}</dd></div>
+      </dl>
+    </section>
+
+    <section class="kpis" aria-label="Headline metrics">
+      @for (k of kpis(); track k.label) {
+        <div class="kpi card">
+          <span class="kpi-label">{{ k.label }}</span>
+          <span class="kpi-value">{{ k.value }}</span>
+          <span class="kpi-note">{{ k.note }}</span>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Experiment log -->
+  @if (phases().length) {
+    <section class="experiments">
+      <h2 class="section-title">Experiment log</h2>
+      <p class="section-sub">Each entry is a hypothesis tested with the eval harness: before/after numbers from real runs, and what was decided.</p>
+      @for (group of phases(); track group.phase) {
+        <h3 class="phase">{{ group.phase }}</h3>
+        @for (e of group.items; track e.id) {
+          <article class="card experiment">
+            <header>
+              <span class="exp-id mono">{{ e.id }}</span>
+              <h4>{{ e.title }}</h4>
+              <span class="badge" [class]="'badge ' + outcomes[e.outcome].tone">{{ outcomes[e.outcome].icon }} {{ outcomes[e.outcome].label }}</span>
+            </header>
+            <dl class="hyp">
+              <div><dt>Hypothesis</dt><dd>{{ e.hypothesis }}</dd></div>
+              <div><dt>Change</dt><dd>{{ e.change }}</dd></div>
+            </dl>
+            <div class="table-scroll">
+              <table class="data exp-table">
+                <thead><tr><th>Metric</th><th class="num">Before</th><th class="num">After</th><th>Change</th></tr></thead>
+                <tbody>
+                  @for (m of e.metrics; track m.name) {
+                    <tr>
+                      <td>{{ m.name }}</td>
+                      <td class="num">{{ formatMetric(m, m.before) }}</td>
+                      <td class="num"><strong>{{ formatMetric(m, m.after) }}</strong></td>
+                      <td><span class="badge" [class]="'badge ' + delta(m).tone">{{ delta(m).text }}</span></td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <p class="finding"><strong>Finding:</strong> {{ e.finding }}</p>
+            <p class="decision"><strong>Decision:</strong> {{ e.decision }}</p>
+            @if (e.runs.length) { <p class="runs muted">Eval runs: @for (run of e.runs; track run) { <span class="mono">{{ run }}</span> }</p> }
+          </article>
+        }
+      }
+    </section>
+  }
+
+  @if (report(); as r) {
+    <h2 class="section-title">Latest run in detail</h2>
+    <div class="grid two">
+      <section class="card">
+        <h2>Quality gates</h2>
+        <p class="sub">A failing gate exits non-zero, so CI can block the deploy.</p>
+        <table class="data">
+          <thead><tr><th>Metric</th><th class="num">Value</th><th class="num">Min</th><th></th></tr></thead>
+          <tbody>
+            @for (g of r.gates; track g.metric) {
+              <tr>
+                <td>{{ gateLabel(g.metric) }}</td>
+                <td class="num">{{ pct(g.value, 1) }}</td>
+                <td class="num">{{ pct(g.minimum) }}</td>
+                <td>@if (g.passed) { <span class="badge good">✓</span> } @else { <span class="badge critical">✕</span> }</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      @if (categories().length) {
+        <section class="card">
+          <h2>Task success by scenario</h2>
+          <p class="sub">Includes adversarial scenarios: unanswerable, off-topic, prompt injection and simulated outages.</p>
+          <div class="hbars">
+            @for (c of categories(); track c.key) {
+              <div class="hbar-row" [title]="c.label + ': ' + pct(c.value, 1) + ' of ' + c.count + ' cases'">
+                <span class="hbar-label">{{ c.label }} <span class="muted">· {{ c.count }}</span></span>
+                <span class="hbar-track"><span class="hbar-fill s1" [style.width.%]="c.value * 100"></span></span>
+                <span class="hbar-value">{{ pct(c.value) }}</span>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <section class="card">
+      <h2>Retrieval: what each search stage adds</h2>
+      <p class="sub">Same queries, three search modes (top {{ r.retrieval.top_k }}). The catalog set includes exact SKUs and specs; policies are a small, easy corpus.</p>
+      <div class="legend" aria-hidden="true">
+        @for (m of modes; track m; let i = $index) {
+          <span class="legend-item"><span class="swatch" [class]="'swatch s' + (i + 1)"></span>{{ modeLabels[m] }}</span>
+        }
+      </div>
+      @for (corpus of corpora; track corpus.key) {
+        <h3 class="corpus">{{ corpus.label }} <span class="muted">· {{ r.retrieval[corpus.key].dense.cases }} queries</span></h3>
+        <div class="metric-groups">
+          @for (metric of rankingMetrics; track metric.key) {
+            <div class="metric-group">
+              <h4>{{ metric.label }}</h4>
+              @for (m of modes; track m; let i = $index) {
+                <div class="hbar-row compact" [title]="modeLabels[m] + ' · ' + metric.label">
+                  <span class="hbar-track"><span class="hbar-fill" [class]="'hbar-fill s' + (i + 1)"
+                    [style.width.%]="r.retrieval[corpus.key][m][metric.key] * 100"></span></span>
+                  <span class="hbar-value">{{ pct(r.retrieval[corpus.key][m][metric.key], 1) }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+      <details class="table-view">
+        <summary>Show as table</summary>
+        <div class="table-scroll">
+          <table class="data">
+            <thead><tr><th>Corpus</th><th>Mode</th><th class="num">Hit&#64;1</th><th class="num">Hit&#64;5</th><th class="num">MRR</th><th class="num">Latency</th></tr></thead>
+            <tbody>
+              @for (corpus of corpora; track corpus.key) {
+                @for (m of modes; track m) {
+                  <tr>
+                    <td>{{ corpus.label }}</td><td>{{ modeLabels[m] }}</td>
+                    <td class="num">{{ pct(r.retrieval[corpus.key][m].hit_at_1, 1) }}</td>
+                    <td class="num">{{ pct(r.retrieval[corpus.key][m].hit_at_5, 1) }}</td>
+                    <td class="num">{{ r.retrieval[corpus.key][m].mrr | number: '1.3-3' }}</td>
+                    <td class="num">{{ r.retrieval[corpus.key][m].latency_ms_avg | number: '1.0-0' }} ms</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    @if (calibration(); as cal) {
+      <section class="card">
+        <h2>Policy relevance threshold</h2>
+        <p class="sub">
+          Top reranker score per policy question. Below the threshold ({{ cal.threshold }}) nothing is passed to the
+          LLM, so it answers “I can't find that”. {{ pct(cal.falseAbstention) }} of answerable questions lost,
+          {{ pct(cal.correctAbstention) }} of unanswerable ones filtered.
+        </p>
+        <div class="strip-wrap">
+          <svg class="strip" [attr.viewBox]="'0 0 ' + strip.width + ' ' + strip.height" role="img" aria-label="Dot plot of reranker scores with the threshold">
+            @for (t of cal.ticks; track t.value) {
+              <line class="grid" [attr.x1]="t.x" [attr.x2]="t.x" y1="14" [attr.y2]="strip.axis - 8" />
+              <text class="tick" [attr.x]="t.x" [attr.y]="strip.axis + 12" text-anchor="middle">{{ t.value }}</text>
+            }
+            <text class="lane-label" x="0" [attr.y]="strip.laneA + 4">Answerable</text>
+            <text class="lane-label" x="0" [attr.y]="strip.laneB + 4">Not answerable</text>
+            <line class="threshold" [attr.x1]="cal.thresholdX" [attr.x2]="cal.thresholdX" y1="8" [attr.y2]="strip.axis - 4" />
+            <text class="threshold-label" [attr.x]="cal.thresholdX + 5" y="14">threshold {{ cal.threshold }}</text>
+            @for (d of cal.dots; track d.id) {
+              <circle class="dot" [class.dot-a]="d.answerable" [class.dot-b]="!d.answerable" [attr.cx]="d.cx" [attr.cy]="d.cy" r="5"><title>{{ d.label }}</title></circle>
+            }
+          </svg>
+        </div>
+      </section>
+    }
+
+    @if (r.agent) {
+      <section class="card">
+        <div class="cases-head">
+          <div>
+            <h2>Every test case</h2>
+            <p class="sub">Answer, reference, judge reasoning and deterministic checks for each case.</p>
+          </div>
+          <div class="segmented" role="group" aria-label="Filter cases">
+            <button type="button" [class.on]="caseFilter() === 'all'" (click)="caseFilter.set('all')">All {{ r.agent.cases.length }}</button>
+            <button type="button" [class.on]="caseFilter() === 'issues'" (click)="caseFilter.set('issues')">Failed {{ issueCount() }}</button>
+          </div>
+        </div>
+        <div class="case-list">
+          @for (c of cases(); track c.id) {
+            <details class="case">
+              <summary>
+                <span class="case-id mono">{{ c.id }}</span>
+                <span class="case-q">{{ c.question }}
+                  @if (c.simulate['erp_down']) { <span class="chip">ERP outage</span> }
+                  @if (c.simulate['llm_down']) { <span class="chip">LLM outage</span> }
+                </span>
+                @if (c.success) { <span class="badge good">✓ Pass</span> } @else { <span class="badge critical">✕ Fail</span> }
+              </summary>
+              <div class="case-body">
+                <div class="case-meta muted">
+                  {{ categoryLabels[c.category] ?? c.category }} · {{ c.account_id }} · intents: {{ c.intents.join(', ') || 'none' }}
+                  · tools: {{ c.tools_called.join(', ') || 'none' }} @if (c.actions.length) { · proposed: {{ c.actions.join(', ') }} }
+                  @if (c.fallbacks.length) { · fallbacks: {{ c.fallbacks.join(', ') }} } · {{ c.latency_ms / 1000 | number: '1.1-1' }} s
+                </div>
+                <div class="checks">
+                  <span class="badge" [class]="'badge ' + (c.verdict === 'correct' ? 'good' : c.verdict === 'partially_correct' ? 'warning' : 'critical')">judge: {{ c.verdict.replace('_', ' ') }}</span>
+                  @for (entry of c.checks | keyvalue; track entry.key) {
+                    <span class="badge" [class]="'badge ' + (entry.value ? 'good' : 'critical')">{{ entry.value ? '✓' : '✕' }} {{ checkLabels[entry.key] ?? entry.key }}</span>
+                  }
+                </div>
+                <h5>Expected</h5><p>{{ c.expected_answer }}</p>
+                <h5>Agent answer</h5><p class="pre">{{ c.answer }}</p>
+                <h5>Judge reasoning</h5><p>{{ c.judge_reasoning }}</p>
+              </div>
+            </details>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

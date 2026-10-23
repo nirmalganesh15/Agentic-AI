@@ -1,0 +1,20 @@
+# Secrets never go into the image
+.env
+.env.*
+
+# Local environments and build output (rebuilt inside Docker)
+.venv
+**/__pycache__
+**/*.pyc
+.qdrant
+frontend/node_modules
+frontend/dist
+frontend/.angular
+
+# Repo and editor files
+.git
+.gitignore
+.vscode
+.idea
+*.md
+!README.md

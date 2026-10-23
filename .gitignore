@@ -11,3 +11,6 @@ wheels/
 
 # Secrets
 .env
+
+# Local Qdrant data
+.qdrant/

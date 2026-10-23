@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "tokens": "node scripts/build-tokens.mjs",
+    "prestart": "npm run tokens",
+    "prebuild": "npm run tokens"
   },
   "private": true,
   "dependencies": {

@@ -1,0 +1,104 @@
+.page-head code { background: var(--surface-2); padding: 1px 6px; border-radius: var(--radius-sm); }
+.state { color: var(--text-secondary); }
+.section-title { margin: 36px 0 4px; font-size: 21px; letter-spacing: -0.01em; }
+.section-sub { margin: 0 0 var(--space-4); color: var(--text-secondary); }
+
+/* Run bar and KPI tiles */
+.run-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) 28px; padding: 14px var(--space-5); }
+.run-bar > .badge { font-size: 13.5px; padding: 4px 12px; }
+.run-meta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; font-size: 13.5px; }
+.run-meta div { display: flex; gap: 6px; }
+.run-meta dt { color: var(--text-muted); }
+.run-meta dd { margin: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-4); }
+.kpi { display: flex; flex-direction: column; gap: 2px; padding: var(--space-4); }
+.kpi-label { font-size: 13px; color: var(--text-secondary); }
+.kpi-value { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi-note { font-size: 12px; color: var(--text-muted); line-height: 1.35; }
+
+/* Experiment log */
+.phase { margin: var(--space-5) 0 var(--space-3); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+.experiment { margin-bottom: var(--space-3); border-left: 3px solid var(--accent); }
+.experiment header { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.exp-id { font-size: 12px; color: var(--accent-text); font-weight: 600; }
+.experiment h4 { margin: 0; font-size: 16px; flex: 1; min-width: 200px; }
+.hyp { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin: var(--space-3) 0; font-size: 13.5px; }
+.hyp dt { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+.hyp dd { margin: 2px 0 0; color: var(--text-secondary); }
+.exp-table { max-width: 640px; }
+.exp-table td { vertical-align: middle; }
+.finding, .decision { margin: var(--space-2) 0 0; font-size: 13.5px; }
+.decision { color: var(--accent-text); }
+.runs { margin: var(--space-2) 0 0; font-size: 12px; }
+.runs .mono { margin-right: 8px; }
+
+/* Grid */
+.grid.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
+.grid.two > .card { margin: 0; }
+
+/* Horizontal bars: <=24px thick, rounded data end, square at the baseline */
+.hbars { display: flex; flex-direction: column; gap: 9px; }
+.hbar-row { display: grid; grid-template-columns: 150px 1fr 48px; align-items: center; gap: 10px; }
+.hbar-row.compact { grid-template-columns: 1fr 56px; gap: 8px; margin-bottom: 2px; }
+.hbar-label { font-size: 13.5px; }
+.hbar-track { height: 14px; display: block; }
+.hbar-fill { display: block; height: 100%; border-radius: 0 4px 4px 0; min-width: 2px; }
+.hbar-fill.s1 { background: var(--series-1); }
+.hbar-fill.s2 { background: var(--series-2); }
+.hbar-fill.s3 { background: var(--series-3); }
+.hbar-value { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-secondary); text-align: right; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: var(--space-2); font-size: 13px; color: var(--text-secondary); }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.swatch.s1 { background: var(--series-1); }
+.swatch.s2 { background: var(--series-2); }
+.swatch.s3 { background: var(--series-3); }
+.corpus { margin: var(--space-4) 0 var(--space-2); font-size: 14.5px; }
+.metric-groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+.metric-group h4 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.table-view { margin-top: var(--space-4); font-size: 13.5px; }
+.table-view summary { cursor: pointer; color: var(--text-muted); width: fit-content; }
+.table-view table { margin-top: 10px; }
+
+/* Calibration strip */
+.strip-wrap { overflow-x: auto; }
+.strip { width: 100%; max-width: 760px; min-width: 480px; height: auto; display: block; }
+.grid { stroke: var(--border); stroke-width: 1; }
+.tick, .threshold-label { font-size: 11px; fill: var(--text-muted); }
+.lane-label { font-size: 12px; fill: var(--text-secondary); }
+.threshold { stroke: var(--text-secondary); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.dot-a { fill: var(--series-1); }
+.dot-b { fill: var(--series-2); }
+
+/* Case explorer */
+.cases-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); flex-wrap: wrap; }
+.segmented { display: inline-flex; padding: 3px; border-radius: var(--radius-md); background: var(--surface-2); }
+.segmented button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); }
+.segmented button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+.case-list { display: flex; flex-direction: column; border-top: 1px solid var(--border); }
+.case { border-bottom: 1px solid var(--border); }
+.case summary { display: grid; grid-template-columns: 52px 1fr auto; gap: var(--space-3); align-items: center; padding: 10px 4px; cursor: pointer; list-style: none; }
+.case summary::-webkit-details-marker { display: none; }
+.case summary:hover { background: var(--surface-2); }
+.case-id { font-size: 12px; color: var(--text-muted); }
+.case-q { font-size: 14px; }
+.case-q .chip { margin-left: 6px; font-size: 11px; }
+.case-body { padding: 4px 4px 14px 68px; font-size: 14px; }
+.case-body h5 { margin: 10px 0 2px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+.case-body p { margin: 0; }
+.case-body .pre { white-space: pre-wrap; }
+.case-meta { font-size: 12.5px; }
+.checks { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.checks .badge { font-size: 11.5px; }
+
+@media (max-width: 900px) {
+  .grid.two, .metric-groups, .hyp { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .hbar-row { grid-template-columns: 110px 1fr 44px; }
+  .case summary { grid-template-columns: 1fr auto; }
+  .case-id { display: none; }
+  .case-body { padding-left: 4px; }
+}

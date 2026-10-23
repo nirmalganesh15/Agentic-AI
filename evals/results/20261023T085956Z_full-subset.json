@@ -1,0 +1,314 @@
+{
+  "run_id": "20261023T085956Z",
+  "created_at": "2026-10-23T08:59:56.696754+00:00",
+  "git_commit": "78cff85",
+  "phase": "commerce",
+  "variant": "full-subset",
+  "config": {
+    "variant": "full",
+    "router": true,
+    "price_guard": true,
+    "model_fallback": true,
+    "agent_model": "claude-haiku-5-5",
+    "fallback_model": "claude-sonnet-5-5",
+    "judge_model": "claude-sonnet-5-5",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-12-v2",
+    "search_candidates": 20,
+    "policy_min_rerank_score": -7.0,
+    "catalog_min_rerank_score": -7.0
+  },
+  "dataset": {
+    "cases": 4
+  },
+  "retrieval": {
+    "top_k": 5,
+    "catalog": {
+      "dense": {
+        "cases": 16,
+        "hit_at_1": 0.9375,
+        "hit_at_5": 1,
+        "mrr": 0.96875,
+        "latency_ms_avg": 28.900043749672477
+      },
+      "hybrid": {
+        "cases": 16,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 13.544218749302672
+      },
+      "hybrid_rerank": {
+        "cases": 16,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 182.53590624954086
+      }
+    },
+    "policies": {
+      "dense": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 28.82899998803623
+      },
+      "hybrid": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 7.797099999152124
+      },
+      "hybrid_rerank": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 147.47820000047795
+      }
+    },
+    "abstention": {
+      "threshold": -7.0,
+      "false_abstention_rate": 0.0,
+      "correct_abstention_rate": 0.0,
+      "scores": [
+        {
+          "id": "m02",
+          "category": "multi_turn",
+          "answerable": true,
+          "top_score": -5.308555603027344
+        }
+      ]
+    }
+  },
+  "agent": {
+    "judge_model": "claude-sonnet-5-5",
+    "summary": {
+      "task_success": 0.25,
+      "accuracy": 0.375,
+      "checks_pass_rate": 0.25,
+      "router_accuracy": 0.25,
+      "price_grounding": 1.0,
+      "citation_validity": 1.0,
+      "action_accuracy": 0.5,
+      "write_safety": 1.0,
+      "fallback_success": 0.0,
+      "guard_interventions": 0,
+      "success_by_category": {
+        "multi_turn": 0.25
+      },
+      "cases_by_category": {
+        "multi_turn": 4
+      },
+      "avg_tool_calls": 0.25,
+      "latency_ms_p50": 2564,
+      "latency_ms_p95": 4150
+    },
+    "cases": [
+      {
+        "id": "m01",
+        "category": "multi_turn",
+        "account_id": "ACC-1001",
+        "question": "Add them to my cart.",
+        "simulate": {},
+        "expected_answer": "Proposes a cart with 20 x FAS-1001 at €15.20 (€304.00) for the buyer to confirm.",
+        "answer": "I've prepared a cart for you to confirm: FAS-1001 × 20 boxes, €304.00 excl. VAT, plus €25.00 shipping excl. VAT. Nothing is ordered until you confirm it in the cart.",
+        "verdict": "correct",
+        "score": 1.0,
+        "judge_reasoning": "The answer proposes 20 x FAS-1001 totaling €304.00 for the buyer to confirm, matches actions_proposed (cart_add), and clearly says nothing is ordered until confirmation. The added €25.00 shipping is extra detail that does not contradict the reference.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "expected_action": true
+        },
+        "success": true,
+        "intents": [
+          "ordering"
+        ],
+        "router_correct": true,
+        "tools_called": [
+          "propose_cart"
+        ],
+        "actions": [
+          "cart_add"
+        ],
+        "fallbacks": [],
+        "models_used": [
+          "claude-haiku-5-5",
+          "claude-haiku-5-5",
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 4150
+      },
+      {
+        "id": "m02",
+        "category": "multi_turn",
+        "account_id": "ACC-1002",
+        "question": "And what's your free shipping threshold?",
+        "simulate": {},
+        "expected_answer": "Free shipping from €500 net excl. VAT.",
+        "answer": "Sorry, I couldn't complete that request right now. You can try again, or ask me to pass it to your sales representative.",
+        "verdict": "incorrect",
+        "score": 0.0,
+        "judge_reasoning": "The assistant gave no information about the free shipping threshold (€500 net excl. VAT) and only returned an error message with an offer to escalate. It contains none of the key facts, though it did not invent anything.",
+        "checks": {
+          "must_include": false,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "no_unexpected_write": true
+        },
+        "success": false,
+        "intents": [],
+        "router_correct": false,
+        "tools_called": [],
+        "actions": [],
+        "fallbacks": [
+          "agent_error"
+        ],
+        "models_used": [
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 2139
+      },
+      {
+        "id": "m03",
+        "category": "multi_turn",
+        "account_id": "ACC-1001",
+        "question": "What's my price for 10 boxes of FAS-1003?",
+        "simulate": {
+          "erp_down": true
+        },
+        "expected_answer": "Says live prices are temporarily unavailable, states no price, and offers the sales team.",
+        "answer": "Sorry, I couldn't complete that request right now. You can try again, or ask me to pass it to your sales representative.",
+        "verdict": "partially_correct",
+        "score": 0.5,
+        "judge_reasoning": "The answer states no price and offers to pass the request to the sales rep, which fits the reference. However, it gives only a generic failure message and never says that live prices are temporarily unavailable, so that key fact is vague.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "no_unexpected_write": true,
+          "expected_fallback": false
+        },
+        "success": false,
+        "intents": [],
+        "router_correct": false,
+        "tools_called": [],
+        "actions": [],
+        "fallbacks": [
+          "agent_error"
+        ],
+        "models_used": [
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 2067
+      },
+      {
+        "id": "m04",
+        "category": "multi_turn",
+        "account_id": "ACC-1003",
+        "question": "OK, put them in my cart.",
+        "simulate": {},
+        "expected_answer": "The account pays by prepayment, so it proposes a quote request (60 x PPE-2004, €2,106.00) instead of a cart.",
+        "answer": "Sorry, I couldn't complete that request right now. You can try again, or ask me to pass it to your sales representative.",
+        "verdict": "incorrect",
+        "score": 0.0,
+        "judge_reasoning": "The assistant answer is a generic failure message. It does not mention the prepayment account, the quote request, 60 x PPE-2004, or the €2,106.00 total, and it proposes no action. None of the reference's key facts are present, so the user's request is not handled.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "expected_action": false
+        },
+        "success": false,
+        "intents": [],
+        "router_correct": false,
+        "tools_called": [],
+        "actions": [],
+        "fallbacks": [
+          "agent_error"
+        ],
+        "models_used": [
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 2564
+      }
+    ]
+  },
+  "gates": [
+    {
+      "metric": "agent.task_success",
+      "minimum": 0.85,
+      "value": 0.25,
+      "passed": false
+    },
+    {
+      "metric": "agent.accuracy",
+      "minimum": 0.85,
+      "value": 0.375,
+      "passed": false
+    },
+    {
+      "metric": "agent.router_accuracy",
+      "minimum": 0.9,
+      "value": 0.25,
+      "passed": false
+    },
+    {
+      "metric": "agent.price_grounding",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.citation_validity",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.action_accuracy",
+      "minimum": 0.9,
+      "value": 0.5,
+      "passed": false
+    },
+    {
+      "metric": "agent.write_safety",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.fallback_success",
+      "minimum": 1.0,
+      "value": 0.0,
+      "passed": false
+    },
+    {
+      "metric": "retrieval.catalog.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    },
+    {
+      "metric": "retrieval.policies.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "duration_s": 23.3
+}

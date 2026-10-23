@@ -1,0 +1,57 @@
+[
+  {
+    "account_id": "ACC-1001",
+    "company": "ABC Engineering",
+    "buyer": "Nirmal Ganesh",
+    "location": "Rotterdam, NL",
+    "country": "NL",
+    "warehouse": "NL",
+    "price_group": "B",
+    "group_discount": 0.08,
+    "contract_prices": {"FAS-1001": 15.20, "PPE-2001": 9.50},
+    "payment_terms": "Net 30",
+    "credit_limit": 25000,
+    "credit_used": 18200,
+    "sales_rep": "Tom Bakker",
+    "orders": [
+      {"order_id": "SO-24811", "date": "2026-09-14", "lines": [{"sku": "FAS-1001", "quantity": 10}, {"sku": "FAS-1003", "quantity": 5}, {"sku": "PPE-2001", "quantity": 20}]},
+      {"order_id": "SO-24390", "date": "2026-08-02", "lines": [{"sku": "PKG-3001", "quantity": 12}, {"sku": "PPE-2003", "quantity": 2}]}
+    ]
+  },
+  {
+    "account_id": "ACC-1002",
+    "company": "XYZ Construction",
+    "buyer": "Jonas Weber",
+    "location": "Munich, DE",
+    "country": "DE",
+    "warehouse": "DE",
+    "price_group": "A",
+    "group_discount": 0.12,
+    "contract_prices": {"FAS-1006": 27.00},
+    "payment_terms": "Net 45",
+    "credit_limit": 50000,
+    "credit_used": 9000,
+    "sales_rep": "Lena Hoffmann",
+    "orders": [
+      {"order_id": "SO-24702", "date": "2026-09-02", "lines": [{"sku": "FAS-1006", "quantity": 8}, {"sku": "PPE-2007", "quantity": 6}, {"sku": "TLS-4002", "quantity": 1}]}
+    ]
+  },
+  {
+    "account_id": "ACC-1003",
+    "company": "PQR Facilities",
+    "buyer": "Inês Costa",
+    "location": "Lisbon, PT",
+    "country": "PT",
+    "warehouse": "NL",
+    "price_group": "C",
+    "group_discount": 0.0,
+    "contract_prices": {},
+    "payment_terms": "Prepayment",
+    "credit_limit": 0,
+    "credit_used": 0,
+    "sales_rep": "Tom Bakker",
+    "orders": [
+      {"order_id": "SO-24655", "date": "2026-08-21", "lines": [{"sku": "MNT-6001", "quantity": 3}, {"sku": "MNT-6002", "quantity": 4}]}
+    ]
+  }
+]

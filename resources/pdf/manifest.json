@@ -1,0 +1,26 @@
+{
+  "01_Leave_Policy.pdf": {
+    "policy_id": "BP-HR-002",
+    "version": "3.1",
+    "status": "valid",
+    "effective_date": "2026-04-01"
+  },
+  "02_HR_Policy_Handbook.pdf": {
+    "policy_id": "BP-HR-001",
+    "version": "5.0",
+    "status": "valid",
+    "effective_date": "2026-01-01"
+  },
+  "03_Travel_and_Expense_Policy.pdf": {
+    "policy_id": "BP-FIN-004",
+    "version": "2.3",
+    "status": "valid",
+    "effective_date": "2026-04-01"
+  },
+  "04_Remote_Work_and_IT_Security_Policy.pdf": {
+    "policy_id": "BP-IT-003",
+    "version": "1.4",
+    "status": "valid",
+    "effective_date": "2026-07-01"
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "run_id": "20261023T090042Z",
+  "created_at": "2026-10-23T09:00:42.270800+00:00",
+  "git_commit": "78cff85",
+  "phase": "commerce",
+  "variant": "full-subset",
+  "config": {
+    "variant": "full",
+    "router": true,
+    "price_guard": true,
+    "model_fallback": true,
+    "agent_model": "claude-haiku-5-5",
+    "fallback_model": "claude-sonnet-5-5",
+    "judge_model": "claude-sonnet-5-5",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-12-v2",
+    "search_candidates": 20,
+    "policy_min_rerank_score": -7.0,
+    "catalog_min_rerank_score": -7.0
+  },
+  "dataset": {
+    "cases": 4
+  },
+  "retrieval": {
+    "top_k": 5,
+    "catalog": {
+      "dense": {
+        "cases": 16,
+        "hit_at_1": 0.9375,
+        "hit_at_5": 1,
+        "mrr": 0.96875,
+        "latency_ms_avg": 35.09302500060585
+      },
+      "hybrid": {
+        "cases": 16,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 14.470456253548036
+      },
+      "hybrid_rerank": {
+        "cases": 16,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 192.56290625162364
+      }
+    },
+    "policies": {
+      "dense": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 30.629799992311746
+      },
+      "hybrid": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 9.253099997295067
+      },
+      "hybrid_rerank": {
+        "cases": 1,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 125.1607000012882
+      }
+    },
+    "abstention": {
+      "threshold": -7.0,
+      "false_abstention_rate": 0.0,
+      "correct_abstention_rate": 0.0,
+      "scores": [
+        {
+          "id": "m02",
+          "category": "multi_turn",
+          "answerable": true,
+          "top_score": -5.308555603027344
+        }
+      ]
+    }
+  },
+  "agent": {
+    "judge_model": "claude-sonnet-5-5",
+    "summary": {
+      "task_success": 1.0,
+      "accuracy": 1.0,
+      "checks_pass_rate": 1.0,
+      "router_accuracy": 1.0,
+      "price_grounding": 1.0,
+      "citation_validity": 1.0,
+      "action_accuracy": 1.0,
+      "write_safety": 1.0,
+      "fallback_success": 1.0,
+      "guard_interventions": 0,
+      "success_by_category": {
+        "multi_turn": 1.0
+      },
+      "cases_by_category": {
+        "multi_turn": 4
+      },
+      "avg_tool_calls": 1,
+      "latency_ms_p50": 4316,
+      "latency_ms_p95": 4839
+    },
+    "cases": [
+      {
+        "id": "m01",
+        "category": "multi_turn",
+        "account_id": "ACC-1001",
+        "question": "Add them to my cart.",
+        "simulate": {},
+        "expected_answer": "Proposes a cart with 20 x FAS-1001 at €15.20 (€304.00) for the buyer to confirm.",
+        "answer": "I've prepared a cart for you to review and confirm:\n\n- FAS-1001 Hex bolt M8x40, stainless steel A2 (box of 100) × 20 = €304.00\n- Net total: €304.00 excl. VAT\n- Shipping: €25.00 excl. VAT\n\nNothing is ordered yet. Please confirm in the cart to complete the order.",
+        "verdict": "correct",
+        "score": 1.0,
+        "judge_reasoning": "The answer proposes a cart with 20 x FAS-1001 at €304.00, matching the reference. It says nothing is ordered yet and asks the buyer to confirm, and actions_proposed is cart_add. The €25.00 shipping line is extra detail that doesn't contradict the reference, though it can't be verified from it.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "expected_action": true
+        },
+        "success": true,
+        "intents": [
+          "ordering"
+        ],
+        "router_correct": true,
+        "tools_called": [
+          "propose_cart"
+        ],
+        "actions": [
+          "cart_add"
+        ],
+        "fallbacks": [],
+        "models_used": [
+          "claude-haiku-5-5",
+          "claude-haiku-5-5",
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 4316
+      },
+      {
+        "id": "m02",
+        "category": "multi_turn",
+        "account_id": "ACC-1002",
+        "question": "And what's your free shipping threshold?",
+        "simulate": {},
+        "expected_answer": "Free shipping from €500 net excl. VAT.",
+        "answer": "Free shipping applies to orders with a net value of €500 or more (excluding VAT). Orders below that are charged a flat €25 for delivery to Germany, the Netherlands and Belgium. [KS-OPS-001 p.1]",
+        "verdict": "correct",
+        "score": 1.0,
+        "judge_reasoning": "The answer states the free shipping threshold of €500 net excluding VAT, matching the reference. The extra detail about a €25 flat fee and the countries is not contradicted by the reference and carries a citation, so it does not count as an invented fact.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "no_unexpected_write": true
+        },
+        "success": true,
+        "intents": [
+          "policy"
+        ],
+        "router_correct": true,
+        "tools_called": [
+          "search_policies"
+        ],
+        "actions": [],
+        "fallbacks": [],
+        "models_used": [
+          "claude-haiku-5-5",
+          "claude-haiku-5-5",
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 3881
+      },
+      {
+        "id": "m03",
+        "category": "multi_turn",
+        "account_id": "ACC-1001",
+        "question": "What's my price for 10 boxes of FAS-1003?",
+        "simulate": {
+          "erp_down": true
+        },
+        "expected_answer": "Says live prices are temporarily unavailable, states no price, and offers the sales team.",
+        "answer": "Live prices and stock are temporarily unavailable, so I can't give you a price for 10 boxes of FAS-1003 right now.\n\nI can send your request to the Kestrel sales team instead. Would you like me to do that?",
+        "verdict": "correct",
+        "score": 1.0,
+        "judge_reasoning": "The answer says live prices are temporarily unavailable, gives no price or stock numbers, and offers to send the request to the sales team. It does not claim any action was done, and actions_proposed is none, so it matches the reference.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "no_unexpected_write": true,
+          "expected_fallback": true
+        },
+        "success": true,
+        "intents": [
+          "price_availability"
+        ],
+        "router_correct": true,
+        "tools_called": [
+          "get_price_and_stock"
+        ],
+        "actions": [],
+        "fallbacks": [
+          "erp_unavailable"
+        ],
+        "models_used": [
+          "claude-haiku-5-5",
+          "claude-haiku-5-5",
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 3604
+      },
+      {
+        "id": "m04",
+        "category": "multi_turn",
+        "account_id": "ACC-1003",
+        "question": "OK, put them in my cart.",
+        "simulate": {},
+        "expected_answer": "The account pays by prepayment, so it proposes a quote request (60 x PPE-2004, €2,106.00) instead of a cart.",
+        "answer": "Your order for 60 × PPE-2004 (€2,106.00 excl. VAT) can't go straight to your cart because your account pays by prepayment. Instead, it's ready as a quote request for your sales rep. Please confirm it in the store to send it. Nothing has been ordered yet.",
+        "verdict": "correct",
+        "score": 1.0,
+        "judge_reasoning": "The answer states the account pays by prepayment, so it proposes a quote request instead of a cart, and gives 60 x PPE-2004 at €2,106.00. It says the request needs buyer confirmation and that nothing has been ordered, which matches actions_proposed=quote_request. The added detail 'excl. VAT' does not contradict the reference.",
+        "checks": {
+          "must_include": true,
+          "must_not_include": true,
+          "prices_grounded": true,
+          "citations_valid": true,
+          "expected_action": true
+        },
+        "success": true,
+        "intents": [
+          "ordering"
+        ],
+        "router_correct": true,
+        "tools_called": [
+          "propose_cart"
+        ],
+        "actions": [
+          "quote_request"
+        ],
+        "fallbacks": [],
+        "models_used": [
+          "claude-haiku-5-5",
+          "claude-haiku-5-5",
+          "claude-haiku-5-5"
+        ],
+        "guard_interventions": 0,
+        "latency_ms": 4839
+      }
+    ]
+  },
+  "gates": [
+    {
+      "metric": "agent.task_success",
+      "minimum": 0.85,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.accuracy",
+      "minimum": 0.85,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.router_accuracy",
+      "minimum": 0.9,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.price_grounding",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.citation_validity",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.action_accuracy",
+      "minimum": 0.9,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.write_safety",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "agent.fallback_success",
+      "minimum": 1.0,
+      "value": 1.0,
+      "passed": true
+    },
+    {
+      "metric": "retrieval.catalog.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    },
+    {
+      "metric": "retrieval.policies.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "duration_s": 21.2
+}

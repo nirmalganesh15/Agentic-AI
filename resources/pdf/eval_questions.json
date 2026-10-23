@@ -1,0 +1,152 @@
+[
+  {
+    "question": "How many earned leave days do employees get per year?",
+    "expected_answer": "18 working days (1.5 per month).",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "Can I take casual leave for 4 days in a row?",
+    "expected_answer": "No. Casual Leave cannot exceed 3 consecutive working days.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "When do I need a medical certificate for sick leave?",
+    "expected_answer": "For sick leave of more than 2 consecutive days.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "How much earned leave can be carried forward?",
+    "expected_answer": "Up to 30 days total; the excess lapses on 31 December.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "How long is maternity leave for a third child?",
+    "expected_answer": "12 weeks.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "Within what time must paternity leave be used?",
+    "expected_answer": "Within 6 months of the child's birth or adoption.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "How is leave encashment calculated?",
+    "expected_answer": "(Monthly basic / 26) x days, max 30 EL days, only at separation.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "Are weekends counted if I take 6 days of earned leave?",
+    "expected_answer": "Yes. The sandwich rule applies for EL of 5 or more consecutive working days.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "How many public and optional holidays are there?",
+    "expected_answer": "12 fixed public holidays and 2 optional holidays.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "Can I use earned leave during probation?",
+    "expected_answer": "EL accrues during probation but can only be used after confirmation.",
+    "source": "01_Leave_Policy.pdf"
+  },
+  {
+    "question": "What happens if I am late three times in a month?",
+    "expected_answer": "Half-day deduction from Casual Leave (late = after 10:45 AM).",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "What is the notice period for a Senior Manager?",
+    "expected_answer": "60 days (grade L4 to L6).",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "How long is probation?",
+    "expected_answer": "6 months, extendable once by up to 3 months.",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "Can earned leave be adjusted against notice period?",
+    "expected_answer": "No.",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "How much is the referral bonus for an L5 role?",
+    "expected_answer": "INR 50,000, paid after the hire completes 90 days.",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "Does the company pay for my gym membership?",
+    "expected_answer": "Yes, wellness reimbursement up to INR 1,500 per month.",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "What is the medical insurance coverage?",
+    "expected_answer": "INR 5,00,000 family floater (employee, spouse, up to 2 children).",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "Can I accept a gift worth INR 3,000 from a vendor?",
+    "expected_answer": "It must be declared to Compliance and may need to be returned (limit INR 2,000).",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "When are salary increments effective?",
+    "expected_answer": "1 April.",
+    "source": "02_HR_Policy_Handbook.pdf"
+  },
+  {
+    "question": "What is the hotel limit for an L2 employee in Mumbai?",
+    "expected_answer": "INR 4,500 per night excluding taxes.",
+    "source": "03_Travel_and_Expense_Policy.pdf"
+  },
+  {
+    "question": "Can an L3 employee fly for a 300 km trip?",
+    "expected_answer": "No. L1 to L3 may fly only when one-way distance exceeds 500 km.",
+    "source": "03_Travel_and_Expense_Policy.pdf"
+  },
+  {
+    "question": "What is the domestic per diem for L5?",
+    "expected_answer": "INR 1,800 per day.",
+    "source": "03_Travel_and_Expense_Policy.pdf"
+  },
+  {
+    "question": "What is the deadline to submit expense claims?",
+    "expected_answer": "Within 30 days of the end of the trip.",
+    "source": "03_Travel_and_Expense_Policy.pdf"
+  },
+  {
+    "question": "Is alcohol reimbursable on business trips?",
+    "expected_answer": "No.",
+    "source": "03_Travel_and_Expense_Policy.pdf"
+  },
+  {
+    "question": "How many days a week must an L4 employee be in office?",
+    "expected_answer": "Minimum 3 days (anchor days Tue, Wed, Thu).",
+    "source": "04_Remote_Work_and_IT_Security_Policy.pdf"
+  },
+  {
+    "question": "Can I work from Dubai for two weeks?",
+    "expected_answer": "Not without approval from HR, Legal and IT Security; work from anywhere is India-only.",
+    "source": "04_Remote_Work_and_IT_Security_Policy.pdf"
+  },
+  {
+    "question": "Can I paste customer data into ChatGPT?",
+    "expected_answer": "No. Confidential or Restricted data must never go into public or unapproved AI tools.",
+    "source": "04_Remote_Work_and_IT_Security_Policy.pdf"
+  },
+  {
+    "question": "How soon must I report a lost laptop?",
+    "expected_answer": "Within 24 hours to IT; FIR copy within 3 days if stolen.",
+    "source": "04_Remote_Work_and_IT_Security_Policy.pdf"
+  },
+  {
+    "question": "I am on probation. How many days must I be in office and can I take earned leave?",
+    "expected_answer": "At least 4 days a week in office; EL accrues but can't be used until confirmation.",
+    "source": "04_Remote_Work_and_IT_Security_Policy.pdf + 01_Leave_Policy.pdf"
+  },
+  {
+    "question": "What is the company's policy on stock options?",
+    "expected_answer": "Not covered in these documents (the system should say it doesn't know).",
+    "source": "none"
+  }
+]

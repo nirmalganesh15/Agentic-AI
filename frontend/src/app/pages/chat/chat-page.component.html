@@ -1,0 +1,157 @@
+<div class="assistant">
+  <!-- Toolbar: who is buying, demo failure switches -->
+  <div class="toolbar">
+    <label class="account">
+      <span class="label">Signed in as</span>
+      <select [ngModel]="accountId()" (ngModelChange)="switchAccount($event)" aria-label="Demo account">
+        @for (a of accounts(); track a.account_id) {
+          <option [value]="a.account_id">{{ a.company }} · {{ a.buyer }}</option>
+        }
+      </select>
+    </label>
+    @if (account(); as a) {
+      <div class="account-meta">
+        <span class="chip">Price group {{ a.price_group }}</span>
+        <span class="chip">{{ a.payment_terms }}</span>
+        <span class="chip">Credit {{ eur(a.available_credit) }}</span>
+        <span class="chip">{{ a.location }}</span>
+      </div>
+    }
+    <div class="switches" role="group" aria-label="Simulate failures">
+      <span class="label">Simulate</span>
+      <button type="button" class="switch" [class.on]="erpDown()" (click)="erpDown.set(!erpDown())" [attr.aria-pressed]="erpDown()">
+        <span class="dot"></span> ERP outage
+      </button>
+      <button type="button" class="switch" [class.on]="llmDown()" (click)="llmDown.set(!llmDown())" [attr.aria-pressed]="llmDown()">
+        <span class="dot"></span> LLM outage
+      </button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Conversation -->
+    <section class="chat">
+      <div class="messages" #scroller aria-live="polite">
+        <div class="thread">
+          @if (messages().length === 0) {
+            <div class="empty">
+              <h1>B2B buying assistant</h1>
+              <p>
+                Find products, check <strong>your</strong> contract price and stock, reorder, request quotes, or ask about
+                trade terms. Switch accounts to see account-specific pricing and credit rules, and use
+                <em>Simulate</em> to watch the fallbacks work.
+              </p>
+              <div class="suggestions">
+                @for (s of suggestions(); track s) {
+                  <button type="button" (click)="ask(s)">{{ s }}</button>
+                }
+              </div>
+            </div>
+          }
+
+          @for (msg of messages(); track $index; let i = $index) {
+            <div class="row" [class.user]="msg.role === 'user'">
+              @if (msg.role === 'bot') { <div class="avatar" aria-hidden="true">K</div> }
+              <div class="bubble" [class.error]="msg.error" [class.selected]="selected() === i">
+                @if (msg.html) {
+                  <div class="md" [innerHTML]="msg.html"></div>
+                } @else {
+                  <p class="plain">{{ msg.text }}</p>
+                }
+
+                @if (msg.response; as res) {
+                  @if (res.products.length) {
+                    <div class="products">
+                      @for (p of res.products; track p.sku) { <app-product-card [product]="p" /> }
+                    </div>
+                  }
+                  @for (action of res.actions; track action.action_id) {
+                    <app-action-card [action]="action" [state]="stateOf(action)"
+                                     (confirm)="confirm(action)" (dismiss)="dismiss(action)" />
+                  }
+                  @if (msg.sources?.length) {
+                    <div class="sources">
+                      @for (s of msg.sources; track s.id) {
+                        <span class="source"><span class="cite" [class.unverified]="!s.citation">{{ s.id }}</span>
+                          {{ s.citation ?? 'not retrieved' }}</span>
+                      }
+                    </div>
+                  }
+                  <button type="button" class="trace-link" (click)="showTrace(i)">
+                    @if (res.fallbacks.length) { <span class="badge warning">↩ fallback</span> }
+                    {{ summary(res) }} · <u>view decision trace</u>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (loading()) {
+            <div class="row">
+              <div class="avatar" aria-hidden="true">K</div>
+              <div class="bubble typing" role="status" aria-label="Assistant is working">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <footer class="composer-wrap">
+        <form class="composer" (ngSubmit)="send()">
+          @if (messages().length) {
+            <button type="button" class="icon-btn" (click)="newChat()" [disabled]="loading()" title="New conversation" aria-label="New conversation">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            </button>
+          }
+          <textarea [(ngModel)]="question" name="question" rows="1" maxlength="1000"
+                    placeholder="Ask about products, prices, orders or terms…" aria-label="Your question"
+                    (keydown.enter)="onEnter($event)"></textarea>
+          <button type="submit" class="send" [disabled]="loading() || !question.trim()" aria-label="Send">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+          </button>
+        </form>
+        <p class="disclaimer">
+          Demo data · fictional company · prices come from a mock ERP, never from the model.
+          <button type="button" class="link mobile-only" (click)="panelOpen.set(true)">Decision trace & cart</button>
+        </p>
+      </footer>
+    </section>
+
+    <!-- Side panel: decision trace and cart -->
+    <aside class="panel" [class.open]="panelOpen()">
+      <div class="panel-head">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" [class.on]="panelTab() === 'trace'" (click)="panelTab.set('trace')">Decision trace</button>
+          <button type="button" role="tab" [class.on]="panelTab() === 'cart'" (click)="panelTab.set('cart')">
+            Cart @if (cartCount()) { <span class="count">{{ cartCount() }}</span> }
+          </button>
+        </div>
+        <button type="button" class="icon-btn mobile-only" (click)="panelOpen.set(false)" aria-label="Close panel">✕</button>
+      </div>
+      <div class="panel-body">
+        @if (panelTab() === 'trace') {
+          <app-trace-panel [response]="selectedResponse()" />
+        } @else {
+          @if (cart(); as c) {
+            @if (c.lines.length) {
+              <table class="data compact">
+                <thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Total</th></tr></thead>
+                <tbody>
+                  @for (l of c.lines; track l.sku) {
+                    <tr><td><span class="mono">{{ l.sku }}</span><br><span class="muted small">{{ l.name }}</span></td>
+                      <td class="num">{{ l.quantity }}</td><td class="num">{{ eur(l.line_total) }}</td></tr>
+                  }
+                </tbody>
+              </table>
+              <p class="cart-total">Net <strong>{{ eur(c.net_total) }}</strong> · shipping {{ eur(c.shipping) }} <span class="muted">excl. VAT</span></p>
+              @if (c.quote_reasons.length) { <p class="badge warning">◐ Needs a quote: {{ c.quote_reasons.join('; ') }}</p> }
+            } @else {
+              <p class="muted">The cart is empty. Ask the assistant to add something, then confirm the proposal.</p>
+            }
+          }
+        }
+      </div>
+    </aside>
+  </div>
+</div>

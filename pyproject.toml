@@ -10,9 +10,13 @@ requires-python = ">=3.12"
 dependencies = [
     "dotenv>=0.9.9",
     "fastapi>=0.146.0",
-    "ipython>=9.17.1",
+    "fastembed>=0.9.0",
     "langchain>=1.4.6",
     "langchain-anthropic>=1.7.6",
+    "langchain-text-splitters>=1.1.3",
+    "langgraph>=1.2.16",
+    "pymupdf>=2.0",
+    "qdrant-client>=1.20.0",
     "uvicorn[standard]>=0.54.0",
 ]
 
@@ -23,3 +27,8 @@ rag-server = "rag.server:main"
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipython>=9.17.1",
+]

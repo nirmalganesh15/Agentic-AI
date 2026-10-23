@@ -1,0 +1,18 @@
+[
+  {"id": "s01", "query": "M10x50 hex bolt", "expected_skus": ["FAS-1002"]},
+  {"id": "s02", "query": "PPE-2006", "expected_skus": ["PPE-2006"]},
+  {"id": "s03", "query": "23 micron machine stretch film", "expected_skus": ["PKG-3001"]},
+  {"id": "s04", "query": "3G2.5 installation cable", "expected_skus": ["ELC-5003"]},
+  {"id": "s05", "query": "1/2 inch torque wrench 200 Nm", "expected_skus": ["TLS-4002"]},
+  {"id": "s06", "query": "zinc plated M8 bolt grade 8.8", "expected_skus": ["FAS-1005"]},
+  {"id": "s07", "query": "EN ISO 20471 vest", "expected_skus": ["PPE-2005"]},
+  {"id": "s08", "query": "S3 safety boots size 43", "expected_skus": ["PPE-2007"]},
+  {"id": "s09", "query": "degreaser for parts washer", "expected_skus": ["MNT-6002"]},
+  {"id": "s10", "query": "600x400x400 carton", "expected_skus": ["PKG-3003"]},
+  {"id": "s11", "query": "TLS-4003", "expected_skus": ["TLS-4003"]},
+  {"id": "s12", "query": "3-way lever connector", "expected_skus": ["ELC-5002"]},
+  {"id": "s13", "query": "anti-fog safety glasses", "expected_skus": ["PPE-2004"]},
+  {"id": "s14", "query": "M8 nut stainless", "expected_skus": ["FAS-1003"]},
+  {"id": "s15", "query": "18V cordless drill", "expected_skus": ["TLS-4001"]},
+  {"id": "s16", "query": "brown packing tape 48mm", "expected_skus": ["PKG-3004"]}
+]

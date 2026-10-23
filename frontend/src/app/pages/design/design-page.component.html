@@ -1,0 +1,102 @@
+<div class="container">
+  <header class="page-head">
+    <span class="eyebrow">AI-native design system</span>
+    <h1>Design system</h1>
+    <p>
+      One token file drives every surface of this prototype: chat, agent-generated cards, the seller desk, charts
+      and dark mode. It's structured so that people, the build and AI generation tools all consume the same source.
+      @if (tokenCount()) { <span class="muted">{{ tokenCount() }} tokens, rendered live from <code>/design-tokens.json</code>.</span> }
+    </p>
+  </header>
+
+  <!-- Pipeline -->
+  <section class="card pipeline">
+    <h2>Token pipeline</h2>
+    <ol class="steps">
+      <li><code>design-tokens.json</code><span>source of truth: values + usage rules</span></li>
+      <li><code>build-tokens.mjs</code><span>runs before every build and dev start</span></li>
+      <li><code>tokens.css</code><span>CSS variables, light and dark</span></li>
+      <li><code>/design-tokens.json</code><span>published for AI design and code tools</span></li>
+      <li><strong>Components</strong><span>use only tokens, never raw values</span></li>
+    </ol>
+  </section>
+
+  <div class="principles">
+    @for (p of principles; track p.title) {
+      <article class="card"><h3>{{ p.title }}</h3><p>{{ p.body }}</p></article>
+    }
+  </div>
+
+  <!-- Agent UI blocks -->
+  <section class="card">
+    <h2>Agent UI blocks</h2>
+    <p class="sub">Rendered from structured tool output, never from LLM-written markup. These are the live components, with sample data.</p>
+    <h3 class="spec-title">Product card · in stock / backorder / ERP offline</h3>
+    <div class="products">
+      @for (p of sampleProducts; track p.sku) { <app-product-card [product]="p" /> }
+    </div>
+    <h3 class="spec-title">Action card · quote request awaiting confirmation</h3>
+    <div class="action-spec"><app-action-card [action]="sampleAction" /></div>
+    <h3 class="spec-title">Status badges · icon + label, never color alone</h3>
+    <div class="badges">
+      <span class="badge good">✓ ok</span><span class="badge warning">↩ fallback</span>
+      <span class="badge critical">⛔ blocked</span><span class="badge neutral">– skipped</span><span class="badge accent">🛒 Cart proposal</span>
+    </div>
+  </section>
+
+  <!-- Color -->
+  <section class="card">
+    <h2>Color</h2>
+    <p class="sub">Semantic roles, not palette names. Dark values are tuned separately for the dark surface, not inverted.</p>
+    <div class="table-scroll">
+      <table class="data colors">
+        <thead><tr><th>Token</th><th>Light</th><th>Dark</th><th>Usage rule</th></tr></thead>
+        <tbody>
+          @for (c of colors(); track c.name) {
+            <tr>
+              <td class="mono">--{{ c.name }}</td>
+              <td><span class="swatch" [style.background]="c.light"></span><span class="mono hex">{{ c.light }}</span></td>
+              <td><span class="swatch" [style.background]="c.dark"></span><span class="mono hex">{{ c.dark }}</span></td>
+              <td class="usage">{{ c.usage }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid two">
+    <section class="card">
+      <h2>Space</h2>
+      <div class="scale">
+        @for (s of spaces(); track s.name) {
+          <div class="scale-row">
+            <span class="mono">--space-{{ s.name }}</span>
+            <span class="bar" [style.width]="s.value"></span>
+            <span class="mono muted">{{ s.value }}</span>
+            <span class="usage">{{ s.usage }}</span>
+          </div>
+        }
+      </div>
+    </section>
+    <section class="card">
+      <h2>Radius & type</h2>
+      <div class="radii">
+        @for (r of radii(); track r.name) {
+          <div class="radius-spec">
+            <span class="radius-box" [style.border-radius]="r.value"></span>
+            <span class="mono">--radius{{ r.name ? '-' + r.name : '' }}</span>
+            <span class="muted">{{ r.value }}</span>
+          </div>
+        }
+      </div>
+      @for (f of fonts(); track f.name) {
+        <div class="font-spec">
+          <span class="mono">--font-{{ f.name }}</span>
+          <p [style.font-family]="f.value">FAS-1001 · Hex bolt M8x40 · €15.20</p>
+          <span class="usage">{{ f.usage }}</span>
+        </div>
+      }
+    </section>
+  </div>
+</div>

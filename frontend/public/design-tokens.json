@@ -1,0 +1,191 @@
+{
+  "$schema": "Kestrel design tokens v1. Source of truth for every color, space, radius and type style. Edit here, then run `npm run tokens`; never hand-edit src/tokens.css.",
+  "color": {
+    "bg": {
+      "light": "#f6f6f4",
+      "dark": "#121211",
+      "usage": "Page background behind all surfaces."
+    },
+    "surface": {
+      "light": "#fcfcfb",
+      "dark": "#1a1a19",
+      "usage": "Cards, panels, chat bubbles from the assistant, chart surfaces."
+    },
+    "surface-2": {
+      "light": "#f0efec",
+      "dark": "#242422",
+      "usage": "Nested or recessed areas inside a surface: code, tool steps, table hover."
+    },
+    "border": {
+      "light": "#e3e2de",
+      "dark": "#2f2f2c",
+      "usage": "1px dividers and card outlines. Never use for emphasis."
+    },
+    "text": {
+      "light": "#0b0b0b",
+      "dark": "#f0efec",
+      "usage": "Primary text and numbers."
+    },
+    "text-secondary": {
+      "light": "#52514e",
+      "dark": "#c3c2b7",
+      "usage": "Supporting text, descriptions, table headers."
+    },
+    "text-muted": {
+      "light": "#77766f",
+      "dark": "#918f86",
+      "usage": "Metadata, captions, timestamps. Not for anything the user must read to act."
+    },
+    "accent": {
+      "light": "#2a78d6",
+      "dark": "#3987e5",
+      "usage": "The one primary action per view, focus rings, active navigation."
+    },
+    "accent-2": {
+      "light": "#6250d6",
+      "dark": "#9085e9",
+      "usage": "Gradient partner of accent, brand mark only."
+    },
+    "accent-soft": {
+      "light": "#e6f0fc",
+      "dark": "#1b2b40",
+      "usage": "Background of selected items, citation chips, intent chips."
+    },
+    "accent-text": {
+      "light": "#1c5cab",
+      "dark": "#86b6ef",
+      "usage": "Text and links on accent-soft or surface."
+    },
+    "user-bubble": {
+      "light": "#2a78d6",
+      "dark": "#2a78d6",
+      "usage": "Background of the buyer's own chat messages."
+    },
+    "user-text": {
+      "light": "#ffffff",
+      "dark": "#ffffff",
+      "usage": "Text on user-bubble."
+    },
+    "series-1": {
+      "light": "#2a78d6",
+      "dark": "#3987e5",
+      "usage": "Chart series 1. Categorical order is fixed: 1, 2, 3."
+    },
+    "series-2": {
+      "light": "#eb6834",
+      "dark": "#d95926",
+      "usage": "Chart series 2."
+    },
+    "series-3": {
+      "light": "#1baf7a",
+      "dark": "#199e70",
+      "usage": "Chart series 3. Below 3:1 on light surface: always pair with a visible value label."
+    },
+    "good": {
+      "light": "#0ca30c",
+      "dark": "#0ca30c",
+      "usage": "Status: success, in stock, passed. Always with an icon or label, never color alone."
+    },
+    "good-soft": {
+      "light": "#e3f5e3",
+      "dark": "#15301a",
+      "usage": "Background of good badges."
+    },
+    "good-text": {
+      "light": "#006300",
+      "dark": "#6fd16f",
+      "usage": "Text on good-soft."
+    },
+    "warning": {
+      "light": "#fab219",
+      "dark": "#fab219",
+      "usage": "Status: fallback used, backorder, partial. Always with an icon or label."
+    },
+    "warning-soft": {
+      "light": "#fdf2d8",
+      "dark": "#352a10",
+      "usage": "Background of warning badges and fallback trace steps."
+    },
+    "warning-text": {
+      "light": "#7a5200",
+      "dark": "#f5c75c",
+      "usage": "Text on warning-soft."
+    },
+    "critical": {
+      "light": "#d03b3b",
+      "dark": "#d03b3b",
+      "usage": "Status: error, blocked, failed gate, out of stock. Always with an icon or label."
+    },
+    "critical-soft": {
+      "light": "#fbe5e5",
+      "dark": "#3a1c1c",
+      "usage": "Background of critical badges and error messages."
+    },
+    "critical-text": {
+      "light": "#a12a2a",
+      "dark": "#f08a8a",
+      "usage": "Text on critical-soft."
+    }
+  },
+  "radius": {
+    "default": {
+      "value": "14px",
+      "usage": "Cards and panels."
+    },
+    "md": {
+      "value": "10px",
+      "usage": "Buttons, inputs, nested blocks."
+    },
+    "sm": {
+      "value": "6px",
+      "usage": "Chips and inline code."
+    },
+    "pill": {
+      "value": "999px",
+      "usage": "Badges and segmented controls."
+    }
+  },
+  "space": {
+    "1": {
+      "value": "4px",
+      "usage": "Gap inside chips and icon-label pairs."
+    },
+    "2": {
+      "value": "8px",
+      "usage": "Gap between related controls."
+    },
+    "3": {
+      "value": "12px",
+      "usage": "Gap between cards in a grid."
+    },
+    "4": {
+      "value": "16px",
+      "usage": "Card padding on mobile; page gutter on phones."
+    },
+    "5": {
+      "value": "20px",
+      "usage": "Card padding on desktop."
+    },
+    "6": {
+      "value": "32px",
+      "usage": "Gap between page sections."
+    }
+  },
+  "font": {
+    "sans": {
+      "value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "usage": "All UI text."
+    },
+    "mono": {
+      "value": "ui-monospace, \"Cascadia Code\", Menlo, Consolas, monospace",
+      "usage": "SKUs, IDs, tool names, code."
+    }
+  },
+  "shadow": {
+    "default": {
+      "light": "0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px rgb(0 0 0 / 0.04)",
+      "dark": "none",
+      "usage": "Raised cards on the page background. Dark mode uses borders instead."
+    }
+  }
+}

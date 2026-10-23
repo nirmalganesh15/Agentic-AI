@@ -1,0 +1,32 @@
+{
+  "KS-OPS-001_Shipping_and_Delivery_v3.0.pdf": {
+    "policy_id": "KS-OPS-001",
+    "version": "3.0",
+    "status": "valid",
+    "effective_date": "2026-03-01"
+  },
+  "KS-OPS-001_Shipping_and_Delivery_v2.0_RETIRED.pdf": {
+    "policy_id": "KS-OPS-001",
+    "version": "2.0",
+    "status": "invalid",
+    "effective_date": "2025-01-01"
+  },
+  "KS-FIN-002_Payment_Terms_and_Credit_v2.1.pdf": {
+    "policy_id": "KS-FIN-002",
+    "version": "2.1",
+    "status": "valid",
+    "effective_date": "2026-01-01"
+  },
+  "KS-OPS-003_Returns_and_RMA_v1.2.pdf": {
+    "policy_id": "KS-OPS-003",
+    "version": "1.2",
+    "status": "valid",
+    "effective_date": "2026-02-01"
+  },
+  "KS-SAL-004_Quotes_and_Volume_Pricing_v1.0.pdf": {
+    "policy_id": "KS-SAL-004",
+    "version": "1.0",
+    "status": "valid",
+    "effective_date": "2026-04-01"
+  }
+}

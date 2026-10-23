@@ -1,0 +1,244 @@
+<div class="container">
+  <!-- Hero -->
+  <section class="hero">
+    <span class="eyebrow">Agentic B2B commerce · working prototype</span>
+    <h1>A buying agent that knows each customer's price, follows the business rules, and hands off when a human should decide</h1>
+    <p class="lede">
+      Kestrel Supply is a fictional ERP-integrated B2B distributor. The assistant covers the buyer journey (find
+      products by spec or SKU, account-specific pricing and stock, reorders, carts, quotes, trade terms) and the
+      seller journey (quote requests and handoffs reviewed on a seller desk). The LLM decides <em>what to do</em>;
+      deterministic code decides <em>what is true and what is allowed</em>.
+    </p>
+    <div class="actions">
+      <a class="btn primary" routerLink="/">Try the assistant</a>
+      <a class="btn" routerLink="/metrics">Evals & experiments</a>
+      <a class="btn" [href]="repoUrl" target="_blank" rel="noopener">Source code ↗</a>
+    </div>
+    @if (stats(); as s) {
+      <dl class="stats">
+        @for (stat of s; track stat.label) {
+          <div><dt>{{ stat.label }}</dt><dd>{{ stat.value }}</dd><span class="muted">{{ stat.note }}</span></div>
+        }
+      </dl>
+    }
+  </section>
+
+  <!-- Architecture -->
+  <section class="block">
+    <h2>Architecture</h2>
+    <p class="intro">Five layers. Only the agent layer uses an LLM; everything that touches money or orders is deterministic.</p>
+    <div class="arch">
+      <div class="layer">
+        <span class="layer-name">Experience</span>
+        <div class="boxes">
+          <div class="box"><strong>Buyer assistant</strong><span>chat, product and action cards, decision trace, cart</span></div>
+          <div class="box"><strong>Seller desk</strong><span>quote requests and handoffs with agent briefs</span></div>
+          <div class="box"><strong>Evals & design system</strong><span>metrics, experiments, tokens</span></div>
+        </div>
+        <span class="tech">Angular 19 · design tokens (JSON → CSS)</span>
+      </div>
+      <div class="layer">
+        <span class="layer-name">API</span>
+        <div class="boxes">
+          <div class="box"><strong>Agent endpoint</strong><span>validation, rate limits, account scoping</span></div>
+          <div class="box"><strong>Confirm endpoints</strong><span>the only path that writes carts and quotes</span></div>
+          <div class="box"><strong>Seller & eval endpoints</strong><span>queue decisions, reports</span></div>
+        </div>
+        <span class="tech">FastAPI</span>
+      </div>
+      <div class="layer agentic">
+        <span class="layer-name">Agent</span>
+        <div class="boxes">
+          <div class="box"><strong>Router</strong><span>intents → tool scope</span></div>
+          <div class="box"><strong>Tool-calling agent</strong><span>Claude Haiku, fallback Sonnet</span></div>
+          <div class="box"><strong>Output guard</strong><span>price and citation checks, self-correction</span></div>
+        </div>
+        <span class="tech">LangGraph state machine</span>
+      </div>
+      <div class="layer">
+        <span class="layer-name">Tools</span>
+        <div class="boxes">
+          <div class="box"><strong>Read</strong><span>search_catalog · get_price_and_stock · get_order_history · search_policies</span></div>
+          <div class="box"><strong>Propose (never write)</strong><span>propose_cart · request_quote · handoff_to_sales</span></div>
+        </div>
+        <span class="tech">Python, traced</span>
+      </div>
+      <div class="layer">
+        <span class="layer-name">Data</span>
+        <div class="boxes">
+          <div class="box"><strong>ERP (mock)</strong><span>accounts, contract and tier pricing, stock, credit, orders</span></div>
+          <div class="box"><strong>Catalog index</strong><span>29 active SKUs, dense + BM25</span></div>
+          <div class="box"><strong>Policy index</strong><span>trade terms PDFs, manifest-controlled freshness</span></div>
+        </div>
+        <span class="tech">Qdrant · FastEmbed · PyMuPDF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent graph -->
+  <section class="block">
+    <h2>The agent graph</h2>
+    <p class="intro">Each request runs this LangGraph state machine. Every node writes to the decision trace you see next to each answer.</p>
+    <div class="card graph-card">
+      <svg class="graph" viewBox="0 0 760 330" role="img"
+           aria-label="Agent graph: start to route; route to decline or agent; agent and tools loop; agent to verify; verify retries the agent once or ends">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="arrowhead" />
+          </marker>
+        </defs>
+        <!-- edges -->
+        <path class="edge" d="M80,160 L118,160" marker-end="url(#arrow)" />
+        <path class="edge" d="M250,150 C278,150 272,62 298,62" marker-end="url(#arrow)" />
+        <path class="edge" d="M250,170 C278,170 272,222 298,222" marker-end="url(#arrow)" />
+        <path class="edge" d="M450,62 C600,62 640,150 678,152" marker-end="url(#arrow)" />
+        <path class="edge" d="M355,244 L355,270" marker-end="url(#arrow)" />
+        <path class="edge" d="M395,270 L395,246" marker-end="url(#arrow)" />
+        <path class="edge" d="M450,214 L498,214" marker-end="url(#arrow)" />
+        <path class="edge dashed" d="M500,232 L452,232" marker-end="url(#arrow)" />
+        <path class="edge" d="M630,222 C662,222 656,170 678,168" marker-end="url(#arrow)" />
+        <!-- edge labels -->
+        <text class="elabel" x="226" y="98">off-topic / unsafe</text>
+        <text class="elabel" x="226" y="214">in scope</text>
+        <text class="elabel" x="348" y="262" text-anchor="end">tool calls</text>
+        <text class="elabel" x="402" y="262">results</text>
+        <text class="elabel" x="474" y="207" text-anchor="middle">answer</text>
+        <text class="elabel" x="474" y="248" text-anchor="middle">retry once</text>
+        <text class="elabel" x="660" y="206">passed</text>
+        <!-- nodes -->
+        <g class="node terminal"><rect x="10" y="138" width="70" height="44" rx="22" /><text x="45" y="165" text-anchor="middle">start</text></g>
+        <g class="node llm"><rect x="120" y="134" width="130" height="52" rx="10" />
+          <text x="185" y="156" text-anchor="middle" class="title">route</text><text x="185" y="174" text-anchor="middle" class="subtitle">router LLM</text></g>
+        <g class="node code"><rect x="300" y="36" width="150" height="52" rx="10" />
+          <text x="375" y="58" text-anchor="middle" class="title">decline</text><text x="375" y="76" text-anchor="middle" class="subtitle">no tools, fixed reply</text></g>
+        <g class="node llm"><rect x="300" y="192" width="150" height="52" rx="10" />
+          <text x="375" y="214" text-anchor="middle" class="title">agent</text><text x="375" y="232" text-anchor="middle" class="subtitle">tool-calling LLM</text></g>
+        <g class="node code"><rect x="300" y="272" width="150" height="52" rx="10" />
+          <text x="375" y="294" text-anchor="middle" class="title">tools</text><text x="375" y="312" text-anchor="middle" class="subtitle">scoped allow-list</text></g>
+        <g class="node code"><rect x="500" y="192" width="130" height="52" rx="10" />
+          <text x="565" y="214" text-anchor="middle" class="title">verify</text><text x="565" y="232" text-anchor="middle" class="subtitle">output guard</text></g>
+        <g class="node terminal"><rect x="680" y="138" width="70" height="44" rx="22" /><text x="715" y="165" text-anchor="middle">end</text></g>
+      </svg>
+      <div class="legend">
+        <span><span class="swatch llm"></span>LLM decides</span>
+        <span><span class="swatch code"></span>Deterministic code</span>
+        <span><span class="dash"></span>Self-correction path</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Decision making -->
+  <section class="block">
+    <h2>How decisions are made: who decides what</h2>
+    <p class="intro">Each layer has a narrow job and a hard boundary. The LLMs choose actions; code owns facts, permissions and money.</p>
+    <div class="layers">
+      @for (l of decisionLayers; track l.who; let i = $index) {
+        <article class="card layer-card" [class]="'card layer-card ' + l.kind">
+          <div class="layer-head">
+            <span class="num">{{ i + 1 }}</span>
+            <h3>{{ l.who }}</h3>
+            <span class="badge" [class]="'badge ' + (l.kind === 'llm' ? 'accent' : l.kind === 'human' ? 'warning' : 'neutral')">
+              {{ l.kind === 'llm' ? 'LLM' : l.kind === 'human' ? 'Human' : 'Code' }}
+            </span>
+          </div>
+          <p><strong>Decides:</strong> {{ l.decides }}</p>
+          <p class="cannot"><strong>Can't:</strong> {{ l.cannot }}</p>
+        </article>
+      }
+    </div>
+
+    <div class="card scope-card">
+      <h3>Intent → tools (least privilege)</h3>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>Router intent</th><th>Tools the agent may call</th></tr></thead>
+          <tbody>
+            @for (s of scopes; track s.intent) {
+              <tr>
+                <td class="mono">{{ s.intent }}</td>
+                <td>
+                  @if (s.tools === null) { <span class="badge critical">⛔ declined, no tools</span> }
+                  @else {
+                    @for (t of s.tools; track t) { <span class="chip mono">{{ t }}</span> }
+                    <span class="chip mono">handoff_to_sales</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="muted note">A message can have several intents ("price for 20 boxes and add them to my cart"); their tool sets are combined.</p>
+    </div>
+  </section>
+
+  <!-- Journeys -->
+  <section class="block">
+    <h2>Buyer and seller journeys</h2>
+    <div class="journeys">
+      <div class="card">
+        <h3>Buyer: reorder in one message</h3>
+        <ol class="flow">
+          @for (f of buyerFlow; track f.step) { <li><strong>{{ f.step }}</strong><span>{{ f.detail }}</span></li> }
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Seller: a quote that needs a human</h3>
+        <ol class="flow">
+          @for (f of sellerFlow; track f.step) { <li><strong>{{ f.step }}</strong><span>{{ f.detail }}</span></li> }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fallbacks -->
+  <section class="block">
+    <h2>Fallback mechanisms</h2>
+    <p class="intro">
+      Every failure has a detector and a defined fallback. Two can be triggered live with the
+      <a routerLink="/">Simulate</a> switches on the assistant; the eval suite runs both on every build.
+    </p>
+    <div class="card table-card">
+      <div class="table-scroll">
+        <table class="data fallbacks">
+          <thead><tr><th>Failure</th><th>Detected by</th><th>Fallback</th><th>What the buyer sees</th><th>Try it</th></tr></thead>
+          <tbody>
+            @for (f of fallbacks; track f.failure) {
+              <tr>
+                <td><strong>{{ f.failure }}</strong></td>
+                <td>{{ f.detect }}</td>
+                <td>{{ f.response }}</td>
+                <td class="muted">{{ f.buyer }}</td>
+                <td>@if (f.demo) { <span class="chip accent">{{ f.demo }}</span> }</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Decisions -->
+  <section class="block">
+    <h2>Key design decisions</h2>
+    <div class="card table-card">
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>Decision</th><th>Why</th><th>Trade-off</th></tr></thead>
+          <tbody>
+            @for (d of decisions; track d.choice) {
+              <tr><td><strong>{{ d.choice }}</strong></td><td>{{ d.why }}</td><td class="muted">{{ d.tradeoff }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>What's simplified in this prototype</h2>
+    <div class="card">
+      <ul class="limits">@for (l of limitations; track l) { <li>{{ l }}</li> }</ul>
+    </div>
+  </section>
+</div>

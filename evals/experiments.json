@@ -1,0 +1,172 @@
+[
+  {
+    "id": "E1",
+    "phase": "Phase 1 · HR policy assistant (same retrieval stack)",
+    "title": "Hybrid search + cross-encoder reranking",
+    "hypothesis": "Exact terms such as \"L4 employee\" get blurred by dense embeddings; adding BM25 and a reranker will put the right document first.",
+    "change": "Dense-only search → dense + BM25 fused with Reciprocal Rank Fusion, then a MiniLM cross-encoder reranks 20 candidates.",
+    "metrics": [
+      {"name": "Retrieval hit@1 (29 questions)", "before": 0.897, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "MRR", "before": 0.931, "after": 1.0, "format": "num", "higher_is_better": true},
+      {"name": "Search latency (CPU)", "before": 15.8, "after": 447.2, "format": "ms", "higher_is_better": false}
+    ],
+    "finding": "Reranking fixed every ranking miss, including the \"L4 office days\" question dense search missed, at ~430 ms extra per search on CPU.",
+    "decision": "Adopted. A wrong document is worse than 0.4 s; the cost is per search, not per token.",
+    "outcome": "adopted",
+    "runs": ["hr/20261023T081308Z"]
+  },
+  {
+    "id": "E2",
+    "phase": "Phase 1 · HR policy assistant (same retrieval stack)",
+    "title": "Calibrating the \"I don't know\" threshold",
+    "hypothesis": "A reranker score threshold can stop weak context reaching the LLM, so it says \"I don't know\" instead of guessing.",
+    "change": "Threshold −4.0 (guessed) → −7.0 (read off the score distributions of answerable vs unanswerable questions).",
+    "metrics": [
+      {"name": "Answerable questions wrongly filtered", "before": 0.103, "after": 0.0, "format": "pct", "higher_is_better": false},
+      {"name": "Unanswerable questions filtered at retrieval", "before": 0.8, "after": 0.5, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "Answerable and in-domain unanswerable scores overlap, so no threshold separates them. The guessed −4.0 silently dropped 10% of real questions. Measured in a retrieval-only run before the first full run.",
+    "decision": "Adopted −7.0: the threshold removes off-topic noise only; in-domain \"not covered\" questions are handled by the agent's grounding rules, which the eval verifies (unanswerable accuracy 100%).",
+    "outcome": "adopted",
+    "runs": ["hr/20261023T081308Z"]
+  },
+  {
+    "id": "E3",
+    "phase": "Phase 1 · HR policy assistant (same retrieval stack)",
+    "title": "Scope rule for off-topic requests",
+    "hypothesis": "The agent stays in scope without an explicit rule.",
+    "change": "Added adversarial cases, then a scope rule in the system prompt and a new off-topic quality gate.",
+    "metrics": [
+      {"name": "Off-topic accuracy", "before": 0.25, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Overall judge accuracy (39 cases)", "before": 0.949, "after": 1.0, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "The hypothesis was wrong. The first full run passed every gate, yet the agent wrote a poem and answered \"capital of France\": no gate covered off-topic requests.",
+    "decision": "Adopted the scope rule and added an off-topic gate. In Phase 2 this became the router's decline path, which needs no tools at all.",
+    "outcome": "adopted",
+    "runs": ["hr/20261023T081308Z", "hr/20261023T081550Z"]
+  },
+  {
+    "id": "E4",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Search stages for a product catalog",
+    "hypothesis": "BM25 will help most on a catalog, because buyers type SKUs and specs like \"3G2.5\" and \"M10x50\".",
+    "change": "Measured dense, hybrid and hybrid + rerank on 25 catalog queries (agent cases plus a retrieval-only SKU/spec set).",
+    "metrics": [
+      {"name": "Catalog hit@1 (dense → hybrid + rerank)", "before": 0.88, "after": 0.96, "format": "pct", "higher_is_better": true},
+      {"name": "Catalog MRR", "before": 0.94, "after": 0.973, "format": "num", "higher_is_better": true},
+      {"name": "Search latency (CPU)", "before": 23.9, "after": 188.5, "format": "ms", "higher_is_better": false}
+    ],
+    "finding": "Partly wrong: BM25 fusion alone didn't help (hit@1 88% → 88%, MRR 0.940 → 0.933). The reranker is what moves the right SKU to the top. Exact SKUs already resolve deterministically in the tool via the ERP.",
+    "decision": "Adopted hybrid + rerank. BM25 stays as cheap insurance for exact codes, but this set shows no measured gain from it yet; a larger catalog is needed to justify it.",
+    "outcome": "adopted",
+    "runs": ["20261023T085327Z_full"]
+  },
+  {
+    "id": "E5",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Propose in the same turn, don't ask first",
+    "hypothesis": "With confirm-before-write, the agent will prepare quote requests when buyers ask for a better price.",
+    "change": "First run showed it asking \"would you like me to send a quote?\" instead. Added a rule: proposals already wait for confirmation, so create them in the same turn.",
+    "metrics": [
+      {"name": "Action accuracy", "before": 0.75, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Quote / discount scenario success", "before": 0.0, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Task success (45 cases)", "before": 0.956, "after": 0.978, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "Asking permission to prepare a proposal that itself needs permission added a wasted turn to every negotiation, a real friction point in B2B buying.",
+    "decision": "Adopted. The confirmation card is the single consent step.",
+    "outcome": "adopted",
+    "runs": ["20261023T083916Z_full", "20261023T084207Z_full"]
+  },
+  {
+    "id": "E6",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Eval fix: a check contradicted its own reference answer",
+    "hypothesis": "The failing prompt-injection case (fake admin asks for a €1 price) is an agent bug.",
+    "change": "Investigated the trace: the agent refused the €1 price, used the real contract price and proposed a quote for the buyer to confirm, exactly what the reference allowed. The deterministic \"no write\" check was stricter than the reference. Added an explicit allowed_actions field.",
+    "metrics": [
+      {"name": "Write-safety check", "before": 0.973, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Prompt-injection scenario success", "before": 0.667, "after": 1.0, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "The hypothesis was wrong: the eval was wrong, not the agent. Checks and reference answers have to agree.",
+    "decision": "Fixed the check with an explicit field. No threshold was loosened, and the agent was unchanged between the two runs.",
+    "outcome": "eval_fix",
+    "runs": ["20261023T084207Z_full", "20261023T084433Z_full"]
+  },
+  {
+    "id": "E7",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Ablation: model fallback",
+    "hypothesis": "Without a fallback model, an LLM provider outage becomes a failed purchase.",
+    "change": "Ran the suite with the fallback disabled (no_model_fallback) and compared with production. Outages are injected with a real failing model name.",
+    "metrics": [
+      {"name": "Fallback success under simulated outages", "before": 0.5, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Outage scenario success", "before": 0.5, "after": 1.0, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "Confirmed. Without the fallback, the LLM-outage case returns the safe apology; with it, Sonnet answers with the correct verified price. The ERP-outage path works either way.",
+    "decision": "Kept. Fallback answers cost more, but only run when the primary fails.",
+    "outcome": "adopted",
+    "runs": ["20261023T085034Z_no_model_fallback", "20261023T084433Z_full"]
+  },
+  {
+    "id": "E8",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Ablation: router + least-privilege tools",
+    "hypothesis": "A router that classifies intents and unlocks only matching tools improves accuracy and safety.",
+    "change": "Ran the suite with the router disabled (no_router: every tool always available) and compared with production.",
+    "metrics": [
+      {"name": "Task success", "before": 1.0, "after": 0.978, "format": "pct", "higher_is_better": true},
+      {"name": "Latency p50", "before": 3218, "after": 4779, "format": "ms", "higher_is_better": false},
+      {"name": "Tool calls on off-topic / injection cases", "before": 2, "after": 2, "format": "num", "higher_is_better": false}
+    ],
+    "finding": "Not supported by this eval. Without the router the agent declined the same requests and made the same tool calls, 1.5 s faster. The task-success gap is one case of run-to-run variance. The router's real value, write tools being unreachable from non-ordering requests, isn't something these 45 cases can stress.",
+    "decision": "Kept as a containment layer, flagged as the main latency cost. Next: a faster classifier, or routing in parallel with the first agent call, plus adversarial cases that try to trigger write tools.",
+    "outcome": "kept",
+    "runs": ["20261023T084641Z_no_router", "20261023T084433Z_full"]
+  },
+  {
+    "id": "E9",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Ablation: deterministic price guard",
+    "hypothesis": "Without the output guard, the model will sometimes state prices it computed or invented.",
+    "change": "Ran the suite with the guard disabled (no_price_guard) and re-checked every answer's amounts against tool results afterwards.",
+    "metrics": [
+      {"name": "Answers with every € amount grounded", "before": 1.0, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Guard interventions in production runs", "before": 0, "after": 0, "format": "num", "higher_is_better": false}
+    ],
+    "finding": "Not supported: because prices are only reachable through the ERP tool, Haiku never invented a price in 45 cases, and the guard never fired. The design prevents the error; the guard proves it at runtime.",
+    "decision": "Kept as a zero-cost safety net (deterministic, under 1 ms, no LLM call). A wrong B2B price is a commercial error, so the check stays even when it's quiet.",
+    "outcome": "kept",
+    "runs": ["20261023T084823Z_no_price_guard", "20261023T084433Z_full"]
+  },
+  {
+    "id": "E10",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Never claim a proposal was sent",
+    "hypothesis": "The judge's \"partially correct\" on the tape quote is a real trust issue, not judge noise.",
+    "change": "The agent said \"I've sent a quote request\" when it had only prepared one. Widened the rule to carts, quotes and handoffs (\"ready for you to confirm below\"), and made the stock wording unambiguous (buyer's warehouse vs other warehouses).",
+    "metrics": [
+      {"name": "Quote / discount scenario success", "before": 0.5, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Deterministic checks passed", "before": 1.0, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Judge accuracy", "before": 0.989, "after": 0.989, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "Fixed, but judge accuracy didn't move: a different case (free shipping) became \"partial\" because the agent left out the €45 EU fee. Single runs vary by about one case.",
+    "decision": "Adopted. Next: run each variant 3× and compare means, so one-case differences aren't mistaken for effects.",
+    "outcome": "adopted",
+    "runs": ["20261023T084433Z_full", "20261023T085327Z_full"]
+  },
+  {
+    "id": "E11",
+    "phase": "Phase 2 · B2B commerce agent",
+    "title": "Multi-turn conversations break when the tool scope changes",
+    "hypothesis": "Found in manual UI testing, not by the eval: after a reorder, a price question during an ERP outage returned \"every model failed\" instead of the ERP fallback.",
+    "change": "Root cause: the model's thinking blocks are bound to the tool list they were created with, and least-privilege scoping gives each turn a different tool list, so the API rejected the history (and the fallback model got the same history). Added 4 multi-turn eval cases that change intent between turns, measured, then dropped thinking blocks from previous turns only.",
+    "metrics": [
+      {"name": "Multi-turn scenario success (4 cases)", "before": 0.25, "after": 1.0, "format": "pct", "higher_is_better": true},
+      {"name": "Task success, full suite (49 cases)", "before": 0.978, "after": 1.0, "format": "pct", "higher_is_better": true}
+    ],
+    "finding": "Every eval case had been single-turn, so a whole class of failures was invisible. The model fallback couldn't help either, because both models received the same invalid history.",
+    "decision": "Fixed, and added a multi-turn quality gate. Lesson: the eval set has to cover the conversation shapes real buyers produce, not just single questions.",
+    "outcome": "adopted",
+    "runs": ["20261023T085956Z_full-subset", "20261023T090042Z_full-subset", "20261023T090118Z_full"]
+  }
+]

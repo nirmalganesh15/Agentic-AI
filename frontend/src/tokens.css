@@ -1,0 +1,94 @@
+/* GENERATED from design-tokens.json by scripts/build-tokens.mjs. Do not edit by hand. */
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4;
+  --surface: #fcfcfb;
+  --surface-2: #f0efec;
+  --border: #e3e2de;
+  --text: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #77766f;
+  --accent: #2a78d6;
+  --accent-2: #6250d6;
+  --accent-soft: #e6f0fc;
+  --accent-text: #1c5cab;
+  --user-bubble: #2a78d6;
+  --user-text: #ffffff;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --good: #0ca30c;
+  --good-soft: #e3f5e3;
+  --good-text: #006300;
+  --warning: #fab219;
+  --warning-soft: #fdf2d8;
+  --warning-text: #7a5200;
+  --critical: #d03b3b;
+  --critical-soft: #fbe5e5;
+  --critical-text: #a12a2a;
+  --radius: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 32px;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px rgb(0 0 0 / 0.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211;
+    --surface: #1a1a19;
+    --surface-2: #242422;
+    --border: #2f2f2c;
+    --text: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #918f86;
+    --accent: #3987e5;
+    --accent-2: #9085e9;
+    --accent-soft: #1b2b40;
+    --accent-text: #86b6ef;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --good-soft: #15301a;
+    --good-text: #6fd16f;
+    --warning-soft: #352a10;
+    --warning-text: #f5c75c;
+    --critical-soft: #3a1c1c;
+    --critical-text: #f08a8a;
+    --shadow: none;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211;
+  --surface: #1a1a19;
+  --surface-2: #242422;
+  --border: #2f2f2c;
+  --text: #f0efec;
+  --text-secondary: #c3c2b7;
+  --text-muted: #918f86;
+  --accent: #3987e5;
+  --accent-2: #9085e9;
+  --accent-soft: #1b2b40;
+  --accent-text: #86b6ef;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --good-soft: #15301a;
+  --good-text: #6fd16f;
+  --warning-soft: #352a10;
+  --warning-text: #f5c75c;
+  --critical-soft: #3a1c1c;
+  --critical-text: #f08a8a;
+  --shadow: none;
+}

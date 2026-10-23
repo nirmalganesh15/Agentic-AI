@@ -1,0 +1,181 @@
+{
+  "run_id": "20261023T083852Z",
+  "created_at": "2026-10-23T08:38:52.058362+00:00",
+  "git_commit": "78cff85",
+  "phase": "commerce",
+  "variant": "full",
+  "config": {
+    "variant": "full",
+    "router": true,
+    "price_guard": true,
+    "model_fallback": true,
+    "agent_model": "claude-haiku-5-5",
+    "fallback_model": "claude-sonnet-5-5",
+    "judge_model": "claude-sonnet-5-5",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-12-v2",
+    "search_candidates": 20,
+    "policy_min_rerank_score": -7.0,
+    "catalog_min_rerank_score": -7.0
+  },
+  "dataset": {
+    "cases": 45
+  },
+  "retrieval": {
+    "top_k": 5,
+    "catalog": {
+      "dense": {
+        "cases": 9,
+        "hit_at_1": 0.7777777777777778,
+        "hit_at_5": 1,
+        "mrr": 0.8888888888888888,
+        "latency_ms_avg": 28.522144453341348
+      },
+      "hybrid": {
+        "cases": 9,
+        "hit_at_1": 0.6666666666666666,
+        "hit_at_5": 1,
+        "mrr": 0.8148148148148148,
+        "latency_ms_avg": 17.36203332742055
+      },
+      "hybrid_rerank": {
+        "cases": 9,
+        "hit_at_1": 0.8888888888888888,
+        "hit_at_5": 1,
+        "mrr": 0.9259259259259259,
+        "latency_ms_avg": 161.60288889336192
+      }
+    },
+    "policies": {
+      "dense": {
+        "cases": 9,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 6.4482666655547085
+      },
+      "hybrid": {
+        "cases": 9,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 6.152877774891547
+      },
+      "hybrid_rerank": {
+        "cases": 9,
+        "hit_at_1": 1,
+        "hit_at_5": 1,
+        "mrr": 1.0,
+        "latency_ms_avg": 105.27334444729301
+      }
+    },
+    "abstention": {
+      "threshold": -7.0,
+      "false_abstention_rate": 0.0,
+      "correct_abstention_rate": 1.0,
+      "scores": [
+        {
+          "id": "pol01",
+          "category": "policy",
+          "answerable": true,
+          "top_score": -4.780274391174316
+        },
+        {
+          "id": "pol02",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 2.538327217102051
+        },
+        {
+          "id": "pol03",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 3.403291702270508
+        },
+        {
+          "id": "pol04",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 5.100030422210693
+        },
+        {
+          "id": "pol05",
+          "category": "policy",
+          "answerable": true,
+          "top_score": -2.0913584232330322
+        },
+        {
+          "id": "pol06",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 2.42211651802063
+        },
+        {
+          "id": "pol07",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 4.279815196990967
+        },
+        {
+          "id": "pol08",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 1.6105754375457764
+        },
+        {
+          "id": "pol09",
+          "category": "policy",
+          "answerable": true,
+          "top_score": 2.879631996154785
+        },
+        {
+          "id": "u01",
+          "category": "unanswerable",
+          "answerable": false,
+          "top_score": -11.10256290435791
+        },
+        {
+          "id": "u02",
+          "category": "unanswerable",
+          "answerable": false,
+          "top_score": -11.245033264160156
+        },
+        {
+          "id": "u03",
+          "category": "unanswerable",
+          "answerable": false,
+          "top_score": -10.151971817016602
+        },
+        {
+          "id": "x01",
+          "category": "off_topic",
+          "answerable": false,
+          "top_score": -11.131157875061035
+        },
+        {
+          "id": "x02",
+          "category": "off_topic",
+          "answerable": false,
+          "top_score": -11.244669914245605
+        }
+      ]
+    }
+  },
+  "gates": [
+    {
+      "metric": "retrieval.catalog.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    },
+    {
+      "metric": "retrieval.policies.hybrid_rerank.hit_at_5",
+      "minimum": 0.9,
+      "value": 1,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "duration_s": 4.4
+}
